@@ -14,7 +14,7 @@ void HttpProtocol::geneHttpResponse(const HttpResponse& http,string& response)
 	char t[10];
 	sprintf(t, "%d", http.getStatusCode());
 	string code = t;
-	response = response + http.getVersion() + " " + code + " " +  http.getReason() + "\n";
+	response = "" + http.getVersion() + " " + code + " " +  http.getReason() + "\n";
 	geneHeader(response,header);
 	response += http.getContent();
 }
@@ -26,7 +26,7 @@ void HttpProtocol::geneHttpRequest(const HttpRequest& http,string& request)
 	HttpHeader header;
 	http.getHeader(header);
 	// generate the request line
-	request = request + method[http.getMethod()] + " " + http.getResource() + " " + http.getVersion()+"\n";  
+	request = "" + method[http.getMethod()] + " " + http.getResource() + " " + http.getVersion()+"\n";  
 	// generate header
 	geneHeader(request,header);
 	request += http.getContent();
@@ -94,6 +94,7 @@ void HttpProtocol::parseHttpRequest(const string& request,HttpRequest& http)
 	HttpHeader header;
 	http.getHeader(header);
 	string str(request);
+	string tmp = "";
 	string delim = "\n";
 	vector<string> vec;
 	split(str,delim,vec);
@@ -107,12 +108,12 @@ void HttpProtocol::parseHttpRequest(const string& request,HttpRequest& http)
 	i++;
 	for(;i<vec.size();i++)
 	{
-		string tmp(http.getContent());
 		tmp = tmp+vec[i];
 		if(i != vec.size()-1)
 			tmp+="\n";
 		http.setContent(tmp);
 	}	
+	http.setHeader(header);
 }
 
 void HttpProtocol::parseHeader(string& str,HttpHeader& http)

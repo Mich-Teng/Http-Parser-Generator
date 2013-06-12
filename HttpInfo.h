@@ -4,9 +4,10 @@
 #include <string>
 
 
-class HttpHeader
+class HttpHeader	// Http Header info
 {
 public:
+	HttpHeader& operator =(const HttpHeader& );
 	std::string host;
 	std::string user_agent;
 //	std::string accept;
@@ -19,13 +20,15 @@ class HttpInfo
 public:
 	HttpInfo();
 
-	void setHost(const std::string& host);
-	const std::string& getHost() const;
-	void setUserAgent(const std::string& user_agent);
-	const std::string& getUserAgent() const;
-	void setContent(const std::string& content);
-	const std::string& getContent() const;
-	void getHeader(HttpHeader& header) const;
+	void setHost(const std::string& host);		// set host info
+	const std::string& getHost() const;			// get host info
+	void setUserAgent(const std::string& user_agent);		// set user_agent info
+	const std::string& getUserAgent() const;		// get user_agent info
+	void setContent(const std::string& content);		// set http content
+	const std::string& getContent() const;		// get http content
+	// easy to copy header from http request to the corresponding http response by calling getHeader and setHeader 
+	void getHeader(HttpHeader& header) const;		// get the header of http package
+	void setHeader(const HttpHeader& header);		// set the header of http package	
 protected:
 	HttpHeader header;		  // http header
 	std::string content; 		  // http content

@@ -1,9 +1,20 @@
 #include "HttpInfo.h"
 
 using namespace std;
+HttpHeader& HttpHeader::operator =(const HttpHeader& tmp)
+{
+	this->host = tmp.host;
+	this->user_agent = tmp.user_agent;
+	return (*this);
+}
 
 HttpInfo::HttpInfo()
 {
+}
+
+void HttpInfo::setHeader(const HttpHeader& h)
+{
+	header = h;
 }
 
 void HttpInfo::getHeader(HttpHeader& h) const
