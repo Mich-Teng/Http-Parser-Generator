@@ -35,20 +35,19 @@ void HttpProtocol::geneHttpRequest(const HttpRequest& http,string& request)
 
 void HttpProtocol::geneHeader(std::string& str,const HttpHeader& http)
 {
-	string tmp;
-	int i = 0;
-	if((tmp = http.host) != "")
-		str  = str + "HOST:"+tmp +"\n";
-	if((tmp = http.user_agent) != "")
-		str  = str + "USER_AGENT:"+tmp +"\n";
+	map<string,string> m;
+	http.get(m);
+	map<string,string>::iterator it = m.begin();
+	for(;it != m.end(); it++)
+		str = str+(*it).first + ":" + (*it).second + "\n";
 	str+="\n";
 }
 
-//×Ö·û´®·Ö¸îº¯Êý
+// split the string
  void HttpProtocol::split(string str,string pattern, vector<string>& result)
  {
      std::string::size_type pos;
-     str+=pattern;//À©Õ¹×Ö·û´®ÒÔ·½±ã²Ù×÷
+     str+=pattern;
      int size=str.size();
  
      for(int i=0; i<size; i++)
@@ -64,8 +63,12 @@ void HttpProtocol::geneHeader(std::string& str,const HttpHeader& http)
      return;
  }
 
-void HttpProtocol::parseHttpResponse(const std::string& response,HttpResponse& http)
+void HttpProtocol::parseHttpResponse(const std::string& res,HttpResponse& http)
 {
+	string response(res);
+	int pos;
+	if( (pos = res.find("\n\r"))!= -1)
+		response = response.replace(pos,2,"\n\n");
 	HttpHeader header;
 	http.getHeader(header);
 	string str(response);
@@ -89,8 +92,12 @@ void HttpProtocol::parseHttpResponse(const std::string& response,HttpResponse& h
 		http.setContent(tmp);
 	}	
 }
-void HttpProtocol::parseHttpRequest(const string& request,HttpRequest& http)
+void HttpProtocol::parseHttpRequest(const string& req,HttpRequest& http)
 {
+	string request(req);           // some browser will use /r to separate the header and content
+	int pos;
+	if( (pos = req.find("\n\r"))!= -1)
+		request = request.replace(pos,2,"\n\n");
 	HttpHeader header;
 	http.getHeader(header);
 	string str(request);
@@ -121,21 +128,7 @@ void HttpProtocol::parseHeader(string& str,HttpHeader& http)
 	int i=0;
 	vector<string> p;
 	split(str,":",p);
-	for(i = 0; i < HEADER_ITEM_NUM; i++)
-		if( p[0] == header_item[i] )
-			break;
-	switch(i)
-	{
-		case HOST:
-			http.host = p[1];
-			break;
-		case USER_AGENT:
-			http.user_agent = p[1];
-			break;
-		default:
-			break;
-	}
- 		
+	http.set(p[0],p[1]);		
 }
 
 void HttpProtocol::parseResponseLine(string& str,HttpResponse& http)

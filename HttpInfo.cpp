@@ -1,13 +1,52 @@
 #include "HttpInfo.h"
 
 using namespace std;
+
+//********************************************************
+//HttpHeader
+//********************************************************
 HttpHeader& HttpHeader::operator =(const HttpHeader& tmp)
 {
-	this->host = tmp.host;
-	this->user_agent = tmp.user_agent;
+	map<string,string> m;
+	tmp.get(m);
+	map<string,string>::iterator it = m.begin();
+	for(;it != m.end(); it++)
+		this->set((*it).first,(*it).second);
 	return (*this);
 }
 
+bool HttpHeader::get(map<string,string>& map) const
+{
+	map = pairs;
+	return true;
+}
+
+HttpHeader::HttpHeader()
+{
+	size = 0;
+}
+
+void HttpHeader::set(const string& key,const string& value)
+{
+	pairs.insert(map<string,string>::value_type(key,value));
+}
+
+bool HttpHeader::get(const string& key,string& value) const
+{
+	map<string,string>::const_iterator it = pairs.find(key);
+	if( it == pairs.end())      // can not find the key
+		return false; 
+	value = (*it).second;
+	return true;
+} 
+
+
+
+//********************************************************
+
+//********************************************************
+// HttpInfo
+//********************************************************
 HttpInfo::HttpInfo()
 {
 }
@@ -22,25 +61,8 @@ void HttpInfo::getHeader(HttpHeader& h) const
 	h = header;
 }
 
-void  HttpInfo::setHost(const string& host)
-{
-	header.host = host;
-}
 
-const string&  HttpInfo::getHost() const 
-{
-	return header.host;
-}
-	
-void  HttpInfo::setUserAgent(const string& user_agent)
-{
-	header.user_agent = user_agent;
-}
-	
-const string&  HttpInfo::getUserAgent() const
-{
-	return header.user_agent;
-}
+
 
 void  HttpInfo::setContent(const string& t)
 {

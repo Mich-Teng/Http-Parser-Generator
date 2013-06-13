@@ -2,17 +2,19 @@
 #define HTTPINFO_H
 
 #include <string>
-
+#include <map>
 
 class HttpHeader	// Http Header info
 {
 public:
 	HttpHeader& operator =(const HttpHeader& );
-	std::string host;
-	std::string user_agent;
-//	std::string accept;
-//	std::string authorization;
-//	std::string referer;
+	bool get(const std::string&, std::string& res) const;		// get the value of specific key
+	void set(const std::string&, const std::string& );	// set the key-value pair
+	bool get(std::map<std::string,std::string>& map) const;   // get all the value of header
+	HttpHeader();
+private:
+	std::map<std::string,std::string> pairs;
+	int size;
 };
 
 class HttpInfo
@@ -29,8 +31,9 @@ public:
 	// easy to copy header from http request to the corresponding http response by calling getHeader and setHeader 
 	void getHeader(HttpHeader& header) const;		// get the header of http package
 	void setHeader(const HttpHeader& header);		// set the header of http package	
-protected:
 	HttpHeader header;		  // http header
+protected:
+	
 	std::string content; 		  // http content
  
 
